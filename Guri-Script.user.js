@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Guri-Script
-// @version      2.2.0
+// @version      2.2.1
 // @description  Remove a segunda parte da string de todos os botões com a função detalhesTurma() na página de solicitar matrícula no Guri e adiciona um botão para expandir todos os detalhes.
 // @match        https://guri.unipampa.edu.br/pta/solicitar_matricula/
 // @grant        none
@@ -20,21 +20,24 @@
   
     // Function to expand all details
     function expandAll() {
-        let button = document.querySelector("#expand-all-button");
-        if (button.textContent === "Expandir todos os detalhes") {
-            button.textContent = "Recolher todos os detalhes";
-            document.querySelectorAll('a[href^="javascript:detalhesTurma("]').forEach(function(link) { 
+    let button = document.querySelector("#expand-all-button");
+    let expanded = button.getAttribute("data-expanded") === "true";
+    
+    document.querySelectorAll('a[href^="javascript:detalhesTurma("]').forEach(function(link) { 
+        if (expanded) {
+            if (link.dataset.expanded === "true") {
                 link.click();
-                link.dataset.expanded = "true";
-            });
+            }
         } else {
-            button.textContent = "Expandir todos os detalhes";
-            document.querySelectorAll('a[href^="javascript:detalhesTurma("][data-expanded="true"]').forEach(function(link) { 
+            if (link.dataset.expanded === "false") {
                 link.click();
-                link.dataset.expanded = "false";
-            });
+            }
         }
-    }
+    });
+    
+    button.innerHTML = expanded ? "Expandir todos os detalhes" : "Fechar todos os detalhes";
+    button.setAttribute("data-expanded", expanded ? "false" : "true");
+}
 
     // Add a button to expand all the details
     let button = document.createElement("button");
